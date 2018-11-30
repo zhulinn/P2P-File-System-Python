@@ -58,7 +58,7 @@ class Server(object):
             self.rfcs.setdefault(num,(title, set()))[1].add(peer)
         finally:
             self.lock.release()
-        header = V + ' 200 OK\n'
+        header = self.V + ' 200 OK\n'
         header += 'RFC %s %s %s %s\n' % (num, title, peer[0], peer[1])
         soc.sendall(header)
     
