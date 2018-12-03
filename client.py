@@ -116,15 +116,6 @@ class Client(object):
             soc.sendall(str.encode(self.V + '  400 Bad Request\n'))
         finally:
             soc.close()
-    
-
-
-        # except ConnectionError:
-        #     print('%s:%s left' % (addr[0], addr[1]))
-        #     break
-        # except BaseException:
-        #     print('System error')
-        #     break
 
     def add(self, num=None, title=None):
         if not num:
