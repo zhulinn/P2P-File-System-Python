@@ -16,17 +16,20 @@ class Server(object):
 
     # start listenning
     def start(self):
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.bind((self.HOST, self.PORT))
-        self.s.listen(5)
-        print('Server %s is listening on port %s' %
-              (self.V, self.PORT))
+        try:
+            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.s.bind((self.HOST, self.PORT))
+            self.s.listen(5)
+            print('Server %s is listening on port %s' %
+                (self.V, self.PORT))
 
-        while True:
-            soc, addr = self.s.accept()
-            print('%s:%s connected' % (addr[0], addr[1]))
-            thread = threading.Thread(target=self.handler, args=(soc, addr))
-            thread.start()
+            while True:
+                soc, addr = self.s.accept()
+                print('%s:%s connected' % (addr[0], addr[1]))
+                thread = threading.Thread(target=self.handler, args=(soc, addr))
+                thread.start()
+        except Exception:
+            print('Shutting down the server..\nGood Bye!')
 
     # connect with a client
     def handler(self, soc, addr):
@@ -120,7 +123,6 @@ class Server(object):
 
 if __name__ == '__main__':
     s = Server()
-    try:
-        s.start()
-    except Exception:
-        print('Shutting down the server..\nGood Bye!')
+    
+    s.start()
+    

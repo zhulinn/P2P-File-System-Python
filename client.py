@@ -3,6 +3,7 @@ import threading
 import platform
 import mimetypes
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -246,5 +247,8 @@ class Client(object):
 
 
 if __name__ == '__main__':
-    client = Client()
+    if len(sys.argv) == 2:
+        client = Client(sys.argv[1])
+    else:
+        client = Client()
     client.start()
