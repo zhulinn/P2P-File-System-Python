@@ -3,6 +3,7 @@ import threading
 import platform
 import mimetypes
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -24,13 +25,15 @@ class Client(object):
 
     def start(self):
         # connect to server
+        print('Connecting to the server %s:%s' % (self.SERVER_HOST, self.SERVER_PORT))
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.server.connect((self.SERVER_HOST, self.SERVER_PORT))
         except BaseException:
             print('Server Not Available.')
             return
-        print('Connected to the server')
+
+        print('Connected')
         # upload
         uploader_process = threading.Thread(target=self.init_upload)
         uploader_process.start()
@@ -116,15 +119,6 @@ class Client(object):
             soc.sendall(str.encode(self.V + '  400 Bad Request\n'))
         finally:
             soc.close()
-    
-
-
-        # except ConnectionError:
-        #     print('%s:%s left' % (addr[0], addr[1]))
-        #     break
-        # except BaseException:
-        #     print('System error')
-        #     break
 
     def add(self, num=None, title=None):
         if not num:
@@ -255,5 +249,8 @@ class Client(object):
 
 
 if __name__ == '__main__':
-    client = Client()
+    if len(sys.argv) == 2:
+        client = Client(sys.argv[1])
+    else:
+        client = Client()
     client.start()

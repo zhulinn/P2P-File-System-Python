@@ -25,13 +25,15 @@ class Client(object):
 
     def start(self):
         # connect to server
+        print('Connecting to the server %s:%s' % (self.SERVER_HOST, self.SERVER_PORT))
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.server.connect((self.SERVER_HOST, self.SERVER_PORT))
         except BaseException:
             print('Server Not Available.')
             return
-        print('Connected to the server')
+
+        print('Connected')
         # upload
         uploader_process = threading.Thread(target=self.init_upload)
         uploader_process.start()
