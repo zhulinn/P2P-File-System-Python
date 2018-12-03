@@ -189,6 +189,9 @@ class Client(object):
                 peer_port = int(lines[idx].split()[-1])
             except Exception:
                 raise MyException('Invalid Input.')
+            # exclude self
+            if((peer_host, peer_port) == (socket.gethostbyname(), self.UPLOAD_PORT)):
+                raise MyException('Do not choose yourself.')
             # send get request
             self.download(num, title, peer_host, peer_port)
         elif lines[0].split()[1] == '400':
@@ -256,7 +259,7 @@ class Client(object):
         raise MyException('Invalid Input.')
 
     def shutdown(self):
-        print('Shutting Down...')
+        print('\nShutting Down...')
         try:
             sys.exit(0)
         except SystemExit:

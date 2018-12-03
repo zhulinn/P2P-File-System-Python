@@ -31,7 +31,7 @@ class Server(object):
                 thread = threading.Thread(target=self.handler, args=(soc, addr))
                 thread.start()
         except KeyboardInterrupt:
-            print('Shutting down the server..\nGood Bye!')
+            print('\nShutting down the server..\nGood Bye!')
             try:
                 sys.exit(0)
             except SystemExit:

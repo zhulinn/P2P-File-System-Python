@@ -10,7 +10,7 @@ This system includes all the features and functionalities described in the requi
 
 # How to Run
 1. Setup Server
-Run `server.py` directly.
+Run `server.py` directly. `Ctrl + C` to shutting down the server.
 ```
 python server.py
 ```
