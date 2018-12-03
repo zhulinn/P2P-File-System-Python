@@ -93,18 +93,18 @@ class Client(object):
                 # Uploading
                 try:
                     print('\nUploading...')
-                    
+                    total_length = int(os.path.getsize(path))
                     send_length = 0
                     with open(path,'r') as file:
-                        to_send = file.read(1024)
+                        to_send = file.read(1024).encode()
                         while to_send:
-                            send_length += len(to_send.encode())
-                            soc.sendall(to_send.encode())
-                            to_send = file.read(1024)
+                            send_length += len(to_send)
+                            soc.sendall(to_send)
+                            to_send = file.read(1024).encode()
                 except BaseException:
                     raise MyException('Uploading Failed')
-                # total_length = int(os.path.getsize(path))
-                # print('send: %s | total: %s' % (send_length, total_length))
+
+                print('send: %s | total: %s' % (send_length, total_length))
                 # if send_length < total_length:
                 #     raise MyException('Uploading Failed')
                 print('Uploading Completed.')
