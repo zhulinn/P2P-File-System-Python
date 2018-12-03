@@ -16,9 +16,9 @@ python server.py
 ```
 
 2. Simulate Clients
-Each `client.py` starts an application for one client. To run mulpiple clients, copy `client.py` to different directory. And run. It will generate an empty directory `rfc` to store this client's file. Put several RFC files under this directory, which means that this client has those RFC files stored in his/her computer.
+Each `client.py` starts an application for one client. To run mulpiple clients, copy `client.py` to different directory. Server's host is optional. It will be `localhost` by default.  It will generate an empty directory `rfc` to store this client's file. Put several RFC files under this directory, which means that this client has those RFC files stored in his/her computer.
 ```
-python client.py
+python client.py [server host]
 ```
 
 # Command Line Interface
