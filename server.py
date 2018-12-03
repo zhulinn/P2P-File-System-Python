@@ -1,5 +1,7 @@
 import socket
 import threading
+import os
+import sys
 from collections import defaultdict
 
 
@@ -28,8 +30,12 @@ class Server(object):
                 print('%s:%s connected' % (addr[0], addr[1]))
                 thread = threading.Thread(target=self.handler, args=(soc, addr))
                 thread.start()
-        except Exception:
+        except KeyboardInterrupt:
             print('Shutting down the server..\nGood Bye!')
+            try:
+                sys.exit(0)
+            except SystemExit:
+                os._exit(0)
 
     # connect with a client
     def handler(self, soc, addr):
@@ -72,6 +78,7 @@ class Server(object):
                         self.rfcs.pop(num, None)
                     self.peers.pop((host, port), None)
                     self.lock.release()
+                soc.close()
                 break
             except BaseException:
                 soc.sendall(str.encode(self.V + '  400 Bad Request\n'))

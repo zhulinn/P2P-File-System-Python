@@ -25,11 +25,12 @@ class Client(object):
 
     def start(self):
         # connect to server
-        print('Connecting to the server %s:%s' % (self.SERVER_HOST, self.SERVER_PORT))
+        print('Connecting to the server %s:%s' %
+              (self.SERVER_HOST, self.SERVER_PORT))
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         try:
             self.server.connect((self.SERVER_HOST, self.SERVER_PORT))
-        except BaseException:
+        except Exception:
             print('Server Not Available.')
             return
 
@@ -49,16 +50,19 @@ class Client(object):
         command_dict = {'1': self.add,
                         '2': self.lookup,
                         '3': self.listall,
-                        '4': self.pre_download}
+                        '4': self.pre_download,
+                        '5': self.shutdown}
         while True:
             req = input(
-                '\n1: Add, 2: Look Up, 3: List All, 4: Download\nEnter your request: ')
+                '\n1: Add, 2: Look Up, 3: List All, 4: Download, 5: Shut Down\nEnter your request: ')
             try:
                 command_dict.setdefault(req, self.invalid_input)()
             except MyException as e:
                 print(e)
-            # except BaseException:
-            #     print('System Error.')
+            except Exception:
+                print('System Error.')
+            except BaseException:
+                self.shutdown()
 
     def init_upload(self):
         # listen upload port
@@ -82,29 +86,33 @@ class Client(object):
             method = header[0].split()[0]
             path = '%s/rfc%s.txt' % (self.DIR, num)
             if version != self.V:
-                soc.sendall(str.encode(self.V + ' 505 P2P-CI Version Not Supported\n'))
+                soc.sendall(str.encode(
+                    self.V + ' 505 P2P-CI Version Not Supported\n'))
             elif not Path(path).is_file():
                 soc.sendall(str.encode(self.V + ' 404 Not Found\n'))
             elif method == 'GET':
                 header = self.V + ' 200 OK\n'
-                header += 'Data: %s\n' % (time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime()))
+                header += 'Data: %s\n' % (time.strftime(
+                    "%a, %d %b %Y %H:%M:%S GMT", time.gmtime()))
                 header += 'OS: %s\n' % (platform.platform())
-                header += 'Last-Modified: %s\n' % (time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(os.path.getmtime(path))))
+                header += 'Last-Modified: %s\n' % (time.strftime(
+                    "%a, %d %b %Y %H:%M:%S GMT", time.gmtime(os.path.getmtime(path))))
                 header += 'Content-Length: %s\n' % (os.path.getsize(path))
-                header += 'Content-Type: %s\n' % (mimetypes.MimeTypes().guess_type(path)[0])
+                header += 'Content-Type: %s\n' % (
+                    mimetypes.MimeTypes().guess_type(path)[0])
                 soc.sendall(header.encode())
                 # Uploading
                 try:
                     print('\nUploading...')
-                    
+
                     send_length = 0
-                    with open(path,'r') as file:
+                    with open(path, 'r') as file:
                         to_send = file.read(1024)
                         while to_send:
                             send_length += len(to_send.encode())
                             soc.sendall(to_send.encode())
                             to_send = file.read(1024)
-                except BaseException:
+                except Exception:
                     raise MyException('Uploading Failed')
                 # total_length = int(os.path.getsize(path))
                 # print('send: %s | total: %s' % (send_length, total_length))
@@ -112,10 +120,11 @@ class Client(object):
                 #     raise MyException('Uploading Failed')
                 print('Uploading Completed.')
                 # Restore CLI
-                print('\n1: Add, 2: Look Up, 3: List All, 4: Download\nEnter your request: ')
+                print(
+                    '\n1: Add, 2: Look Up, 3: List All, 4: Download\nEnter your request: ')
             else:
                 raise MyException('Bad Request.')
-        except BaseException:
+        except Exception:
             soc.sendall(str.encode(self.V + '  400 Bad Request\n'))
         finally:
             soc.close()
@@ -172,13 +181,13 @@ class Client(object):
             for i, line in enumerate(lines[1:]):
                 line = line.split()
                 print('%s: %s:%s' % (i + 1, line[-2], line[-1]))
-            
+
             try:
                 idx = int(input('Choose one peer to download: '))
                 title = lines[idx].rsplit(None, 2)[0].split(None, 2)[-1]
                 peer_host = lines[idx].split()[-2]
                 peer_port = int(lines[idx].split()[-1])
-            except BaseException:
+            except Exception:
                 raise MyException('Invalid Input.')
             # send get request
             self.download(num, title, peer_host, peer_port)
@@ -197,7 +206,7 @@ class Client(object):
             if soc.connect_ex((peer_host, peer_port)):
                 # print('Try Local Network...')
                 # if soc.connect_ex(('localhost', peer_port)):
-                    raise MyException('Peer Not Available')
+                raise MyException('Peer Not Available')
             # make request
             msg = 'GET RFC %s %s\n' % (num, self.V)
             msg += 'Host: %s\n' % socket.gethostname()
@@ -205,7 +214,7 @@ class Client(object):
             soc.sendall(msg.encode())
 
             # Downloading
-        
+
             header = soc.recv(1024).decode()
             print('Recieve response header: \n%s' % header)
             header = header.splitlines()
@@ -213,23 +222,23 @@ class Client(object):
                 path = '%s/rfc%s.txt' % (self.DIR, num)
                 print('Downloading...')
                 try:
-                    with open(path,'w') as file:
+                    with open(path, 'w') as file:
                         content = soc.recv(1024)
                         while content:
                             file.write(content.decode())
                             content = soc.recv(1024)
-                except BaseException:
+                except Exception:
                     raise MyException('Downloading Failed')
-                
+
                 total_length = int(header[4].split()[1])
-                print('write: %s | total: %s' % (os.path.getsize(path), total_length))
+                # print('write: %s | total: %s' % (os.path.getsize(path), total_length))
 
                 if os.path.getsize(path) < total_length:
                     raise MyException('Downloading Failed')
 
                 print('Downloading Completed.')
                 # Share file, send ADD request
-                print('Sending ADD request...')
+                print('Sending ADD request to share...')
                 if self.shareable:
                     self.add(num, title)
             elif header[0].split()[1] == '400':
@@ -243,9 +252,15 @@ class Client(object):
             # Restore CLI
           #  print('\n1: Add, 2: Look Up, 3: List All, 4: Download\nEnter your request: ')
 
-
     def invalid_input(self):
         raise MyException('Invalid Input.')
+
+    def shutdown(self):
+        print('Shutting Down...')
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
 
 
 if __name__ == '__main__':

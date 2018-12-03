@@ -20,7 +20,10 @@ Each `client.py` starts an application for one client. To run mulpiple clients, 
 ```
 python client.py [server host]
 ```
-
+If you are runing the server on AWS, input it's public IP as server host. For example, if you have a Linux instance running on 13.25.100.100, run like this:
+```
+python client.py 13.25.100.100
+```
 # Command Line Interface
 - At server's end, it shows recieved requests and the server's status. No need for input.
 - At client's end, it has an operation menu for the client to interact with. Simplely enter the No. of the choice.
