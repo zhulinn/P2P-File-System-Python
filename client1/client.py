@@ -190,7 +190,7 @@ class Client(object):
             except Exception:
                 raise MyException('Invalid Input.')
             # exclude self
-            if((peer_host, peer_port) == (socket.gethostbyname(), self.UPLOAD_PORT)):
+            if((peer_host, peer_port) == (socket.gethostname(), self.UPLOAD_PORT)):
                 raise MyException('Do not choose yourself.')
             # send get request
             self.download(num, title, peer_host, peer_port)
