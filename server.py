@@ -83,8 +83,10 @@ class Server(object):
             except BaseException:
                 try:
                     soc.sendall(str.encode(self.V + '  400 Bad Request\n'))
-                except BaseException:
+                except ConnectionError:
                     print('Network Problem.')
+                    soc.close()
+                    break
 
     def addRecord(self, soc, peer, num, title):
         self.lock.acquire()
