@@ -260,6 +260,7 @@ class Client(object):
 
     def shutdown(self):
         print('\nShutting Down...')
+        self.server.close()
         try:
             sys.exit(0)
         except SystemExit:
