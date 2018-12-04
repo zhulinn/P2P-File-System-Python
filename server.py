@@ -23,12 +23,13 @@ class Server(object):
             self.s.bind((self.HOST, self.PORT))
             self.s.listen(5)
             print('Server %s is listening on port %s' %
-                (self.V, self.PORT))
+                  (self.V, self.PORT))
 
             while True:
                 soc, addr = self.s.accept()
                 print('%s:%s connected' % (addr[0], addr[1]))
-                thread = threading.Thread(target=self.handler, args=(soc, addr))
+                thread = threading.Thread(
+                    target=self.handler, args=(soc, addr))
                 thread.start()
         except KeyboardInterrupt:
             print('\nShutting down the server..\nGood Bye!')
@@ -67,26 +68,32 @@ class Server(object):
                     else:
                         raise AttributeError('Method Not Match')
             except ConnectionError:
-                print('%s:%s left' % (addr[0],addr[1]))
+                print('%s:%s left' % (addr[0], addr[1]))
                 # Clean data if necessary
                 if host and port:
-                    self.lock.acquire()
-                    nums = self.peers[(host, port)]
-                    for num in nums:
-                        self.rfcs[num][1].discard((host, port))
-                    if not self.rfcs[num][1]:
-                        self.rfcs.pop(num, None)
-                    self.peers.pop((host, port), None)
-                    self.lock.release()
+                    self.clear(host,port)
                 soc.close()
                 break
             except BaseException:
                 try:
                     soc.sendall(str.encode(self.V + '  400 Bad Request\n'))
                 except ConnectionError:
-                    print('Network Problem.')
+                    print('%s:%s left' % (addr[0], addr[1]))
+                    # Clean data if necessary
+                    if host and port:
+                        self.clear(host,port)
                     soc.close()
                     break
+
+    def clear(self, host, port):
+        self.lock.acquire()
+        nums = self.peers[(host, port)]
+        for num in nums:
+            self.rfcs[num][1].discard((host, port))
+        if not self.rfcs[num][1]:
+            self.rfcs.pop(num, None)
+        self.peers.pop((host, port), None)
+        self.lock.release()
 
     def addRecord(self, soc, peer, num, title):
         self.lock.acquire()
@@ -98,7 +105,8 @@ class Server(object):
         # print(self.rfcs)
         # print(self.peers)
         header = self.V + ' 200 OK\n'
-        header += 'RFC %s %s %s %s\n' % (num, self.rfcs[num][0], peer[0], peer[1])
+        header += 'RFC %s %s %s %s\n' % (num,
+                                         self.rfcs[num][0], peer[0], peer[1])
         soc.sendall(str.encode(header))
 
     def getPeersOfRfc(self, soc, num):
@@ -135,6 +143,5 @@ class Server(object):
 
 if __name__ == '__main__':
     s = Server()
-    
+
     s.start()
-    
