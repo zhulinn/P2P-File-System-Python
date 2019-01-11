@@ -1,6 +1,14 @@
 # Peer-to-Peer with Centralized Index (P2P-CI) System
 
-Internet protocol standards are defined in documents called “Requests for Comments” (RFCs). RFCs are available for download from the IETF web site (http://www.ietf.org/). Rather than using this centralized server for downloading RFCs, you will build a P2P-CI system in which peers who wish to download an RFC that they do not have in their hard drive, may download it from another active peer who does. All communication among peers or between a peer and the server will take place over TCP. 
+This application is a P2P file sharing system with a centralized index (CI), in which peers who wish to download a file that they do not have in their hard drive, may download it from another active peer who does. All communication among peers or between a peer and the server will take place over TCP. 
+
+The project goals:
+- Becoming familiar with network programming and the socket interface
+- Creating server processes that wait for connections
+- Creating client processes that contact a well-known server and exchange data over the Internet
+- Defining a simple application protocol and making sure that peers and server follow precisely the specifications for their side of the - protocol in order to accomplish particular tasks
+- Creating and managing a centralized index at the server based on information provided by the peers
+- Implementing a concurrent server that is capable of carrying out communication with multiple clients simultaneously
 
 # Screenshot
 ![](testing-files/server.png)
