@@ -1,7 +1,3 @@
-# Author
-- Lin Zhu lzhu15@ncsu.edu
-- Huiming Yang hyang26@ncsu.edu
-
 # Enviroment
 - Python 3.7.0(3.5+)
 
